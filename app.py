@@ -41,7 +41,7 @@ def updaloadSubtitile(video_id, subtitles_file):
             return jsonify({"message": "No subtitles file provided"}), 400
 
     except Exception as e:
-        return jsonify({"message": str(e)}), 500
+        return jsonify({"message": "something went wrong"}), 500
 
 
 @app.route("/uploadFile", methods=["POST"])
@@ -69,8 +69,8 @@ def updaloadFile():
         else:
             return jsonify({"message": "No file provided"}), 400
 
-    except Exception as e:
-        return jsonify({"message": str(e)}), 500
+    except Exception:
+        return jsonify({"message": "something went wrong"}), 500
 
 
 @app.route("/get_video/<video_id>", methods=["GET"])
@@ -81,7 +81,7 @@ def get_video(video_id):
         return send_file(video_file, mimetype=video_file.content_type)
 
     except Exception as e:
-        return jsonify({"message": str(e)}), 500
+        return jsonify({"message": "something went wrong"}), 500
 
 
 @app.route("/get_all_videos", methods=["GET"])
@@ -102,7 +102,7 @@ def get_all_videos():
         return jsonify({"path": "/get_video", "data": videos}), 200
 
     except Exception as e:
-        return jsonify({"message": str(e)}), 500
+        return jsonify({"message": "something went wrong"}), 500
 
 
 @app.route("/get_video_with_subtitle/<video_id>", methods=["GET"])
@@ -119,12 +119,10 @@ def get_video_with_subtitle(video_id):
         if video_files is None:
             return jsonify({"message": "No file found"}), 404
 
-        return (
-            dumps({"path": "/get_video", "data": videos[1],"statusCode":200})
-        )
+        return dumps({"path": "/get_video", "data": videos[1], "statusCode": 200})
 
     except Exception as e:
-        return jsonify({"message": str(e)}), 500
+        return jsonify({"message": "something went wrong"}), 500
 
 
 @app.route("/download/<filename>")
@@ -134,10 +132,7 @@ def download_file(filename):
         static_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")
         return send_from_directory(static_dir, filename, as_attachment=True)
     except Exception as e:
-        return str(e)
-
-
-
+        return jsonify({"message": "something went wrong"}), 500
 
 
 # if __name__ == "__main__":
