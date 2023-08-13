@@ -1,3 +1,5 @@
+import random
+import string
 from flask import current_app
 from flask import Flask
 from flask import jsonify, request, send_file, send_from_directory
@@ -18,18 +20,14 @@ def hello_world():
 
 
 
-def updaloadSubtitile(video_id, subtitles_file):
+def updaloadSubtitile(subtitles_file , filename):
     try:
         db = returnDBCollection()
         print("hello")
-        collection = db.subtitles
-        checkVideo = collection.find_one({"video_id": video_id})
-        if checkVideo:
-            return jsonify({"message": "Subtitles already exists on that video"}), 401
-        #  subtitles_file = request.files['subtitles']
+        collection = db.videos
         if subtitles_file:
             subtitles_data = json.load(subtitles_file)
-            collection.insert_one({"video_id": video_id, "subtitles": subtitles_data})
+            collection.insert_one({"subtitles": subtitles_data, "video":filename})
             return jsonify({"message": "Subtitles uploaded successfully"}), 200
 
         else:
@@ -40,32 +38,30 @@ def updaloadSubtitile(video_id, subtitles_file):
 
 
 # @app.route("/uploadFile", methods=["POST"])
+def generate_random_filename():
+    # Generate a random string of letters and digits
+    random_string = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
+    return random_string
+
 def updaloadFile():
     try:
-        db = returnDBCollection()
-        fs = GridFS(db)
 
         file = request.files["video"]
         subtitles_file = request.files["subtitles"]
         if file.content_type != "video/mp4" and subtitles_file != "application/json":
             return jsonify({"message": "invalid file type", "status_code": 401})
-        if file:
-            video_id = fs.put(
-                file, content_type=file.content_type, filename=file.filename
-            )
-            updaloadSubtitile(video_id, subtitles_file)
-            return (
-                jsonify(
-                    {
-                        "message": "Video uploaded successfully",
-                        "video_id": str(video_id),
-                        "status_code": 200,
-                    }
-                ),
-                200,
-            )
+        if file and subtitles_file:
+            db = returnDBCollection()
+            print("hello")
+            collection = db.videos
+            subtitles_data = json.load(subtitles_file)
+            fileNameToSave = generate_random_filename() + '.mp4'
+            filename = os.path.join(current_app.config['UPLOAD_FOLDER'], fileNameToSave)
+            file.save(filename)
+            collection.insert_one({"subtitles": subtitles_data, "video":fileNameToSave})
+            return jsonify({"message": "Subtitles uploaded successfully"}), 200
         else:
-            return jsonify({"message": "No file provided"}), 400
+            return jsonify({"message": "Please provide both the files"}), 403
 
     except Exception:
         return jsonify({"message": "something went wrong"}), 500
