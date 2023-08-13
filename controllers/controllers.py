@@ -84,20 +84,8 @@ def get_video(video_id):
 def get_all_videos():
     try:
         db = returnDBCollection()
-        fs = GridFS(db)
-        video_files = fs.find({})  # Retrieve all video files
-
-        # Convert video files to a list of dictionaries
-        videos = []
-        if video_files is None:
-            return jsonify({"message": "No file found"}), 404
-        for video_file in video_files:
-            videos.append(
-                {
-                    "video_id": str(video_file._id),
-                }
-            )
-        return jsonify({"path": "/get_video", "data": videos}), 200
+        db.videos.find({})
+        return jsonify({"data": dumps(db.videos.find({}))}), 200
 
     except Exception as e:
         return jsonify({"message": "something went wrong"}), 500
@@ -118,7 +106,7 @@ def get_video_with_subtitle(video_id):
         if video_files is None:
             return jsonify({"message": "No file found"}), 404
 
-        return dumps({"path": "/get_video", "data": videos[1], "statusCode": 200})
+        return dumps({"path": "/uploads", "data": videos[1], "statusCode": 200})
 
     except Exception as e:
         return jsonify({"message": "something went wrong"}), 500
