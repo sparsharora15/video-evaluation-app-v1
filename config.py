@@ -1,0 +1,1 @@
+MONGO_URI = "mongodb+srv://sparsharora:sparsharora15@cluster0.znskbqc.mongodb.net/video-evaluation-app?retryWrites=true&w=majority"

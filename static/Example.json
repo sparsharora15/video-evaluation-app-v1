@@ -1,0 +1,22 @@
+{
+    "_id": "64d748e181e56d2fba180a96",
+    "subtitles": {
+        "subtitles": [
+            {
+                "timeStampFrom": "00:00:02",
+                "timeStampTo": "00:00:06",
+                "text": "Subtitle text here"
+            },
+            {
+                "timeStampFrom": "00:00:08",
+                "timeStampTo": "00:00:11",
+                "text": "Subtitle text here"
+            },
+            {
+                "timeStampFrom": "00:00:12",
+                "timeStampTo": "00:00:15",
+                "text": "Subtitle text here"
+            }
+        ]
+    }
+}
