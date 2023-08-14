@@ -41,7 +41,7 @@ def updaloadFile():
             collection.insert_one(
                 {"subtitles": subtitles_data, "video": fileNameToSave}
             )
-            return jsonify({"message": "Subtitles uploaded successfully"}), 200
+            return jsonify({"message": "Subtitles uploaded successfully","statusCode":200}), 200
         else:
             return jsonify({"message": "Please provide both the files"}), 403
 
