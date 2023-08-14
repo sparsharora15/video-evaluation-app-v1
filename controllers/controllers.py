@@ -32,7 +32,6 @@ def updaloadFile():
             return jsonify({"message": "invalid file type", "status_code": 401})
         if file and subtitles_file:
             db = returnDBCollection()
-            print("hello")
             collection = db.videos
             subtitles_data = json.load(subtitles_file)
             fileNameToSave = generate_random_filename() + ".mp4"
