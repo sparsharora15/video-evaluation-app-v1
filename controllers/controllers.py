@@ -20,16 +20,8 @@ cloudinary.config(
     api_secret="Li8nDCTGy5iG-BrXQk0dpzGmOfA",
 )
 
-# @app.route("/")
 
-
-def hello_world():
-    return dumps("hello world")
-
-
-# @app.route("/uploadFile", methods=["POST"])
 def generate_random_filename():
-    # Generate a random string of letters and digits
     random_string = "".join(random.choices(string.ascii_letters + string.digits, k=10))
     return random_string
 
@@ -79,20 +71,6 @@ def uploadFile():
         return jsonify({"message": "something went wrong", "err": str(e)}), 500
 
 
-# @app.route("/get_video/<video_id>", methods=["GET"])
-def get_video(video_id):
-    try:
-        db = returnDBCollection()
-        fs = GridFS(db)
-        video_id = ObjectId(video_id)
-        video_file = fs.get(video_id)
-        return send_file(video_file, mimetype=video_file.content_type)
-
-    except Exception as e:
-        return jsonify({"message": "something went wrong"}), 500
-
-
-# @app.route("/get_all_videos", methods=["GET"])
 def get_all_videos():
     try:
         db = returnDBCollection()
@@ -104,7 +82,6 @@ def get_all_videos():
         return jsonify({"message": "something went wrong", "err": str(e)}), 500
 
 
-# @app.route("/get_video_with_subtitle/<video_id>", methods=["GET"])
 def get_video_with_subtitle(video_id):
     try:
         db = returnDBCollection()
@@ -119,7 +96,6 @@ def get_video_with_subtitle(video_id):
         return jsonify({"message": "something went wrong" + str(e)}), 500
 
 
-# @app.route("/download/<filename>")
 def download_file(filename):
     try:
         db = returnDBCollection()
@@ -128,3 +104,19 @@ def download_file(filename):
         return send_from_directory(static_dir, filename, as_attachment=True)
     except Exception as e:
         return jsonify({"message": "something went wrong"}), 500
+
+
+def updateSubtitles():
+    try:
+        db = returnDBCollection()
+        data = request.json["data"]
+        videoId = request.json["videoId"]
+        if not data or not videoId:
+            return jsonify({"message": "something went wrong"}), 500
+        db.videos.find_one_and_update(
+            {"_id": ObjectId(videoId)}, {"$set": {"subtitles": data}}
+        )
+        return jsonify({"message": "subtitles updated successfully","status_code":200})
+
+    except Exception as e:
+        return jsonify({"message": "something went wrong", "err": str(e)}), 500
