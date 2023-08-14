@@ -84,8 +84,9 @@ def get_video(video_id):
 def get_all_videos():
     try:
         db = returnDBCollection()
-        data=list(db.videos.find({})) 
-        return jsonify({"data": data}), 200
+        data = list(db.videos.find({}))
+        serialized_data = json_util.dumps(data)  # Serialize the data
+        return serialized_data, 200
 
     except Exception as e:
         return jsonify({"message": "something went wrong" ,"err":str(e)}), 500
