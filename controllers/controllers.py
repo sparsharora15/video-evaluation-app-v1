@@ -84,11 +84,11 @@ def get_video(video_id):
 def get_all_videos():
     try:
         db = returnDBCollection()
-        db.videos.find({})
-        return jsonify({"data": dumps(db.videos.find({}))}), 200
+        data=list(db.videos.find({})) 
+        return jsonify({"data": data}), 200
 
     except Exception as e:
-        return jsonify({"message": "something went wrong"}), 500
+        return jsonify({"message": "something went wrong" ,"err":str(e)}), 500
 
 
 # @app.route("/get_video_with_subtitle/<video_id>", methods=["GET"])
