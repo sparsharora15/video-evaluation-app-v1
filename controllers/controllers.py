@@ -10,6 +10,16 @@ import os
 from .getCollection import returnDBCollection
 
 
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
+
+cloudinary.config(
+    cloud_name="dw65n4evs",
+    api_key="452623662246538",
+    api_secret="Li8nDCTGy5iG-BrXQk0dpzGmOfA",
+)
+
 # @app.route("/")
 
 
@@ -24,28 +34,49 @@ def generate_random_filename():
     return random_string
 
 
-def updaloadFile():
+def uploadFile():
     try:
         file = request.files["video"]
         subtitles_file = request.files["subtitles"]
-        if file.content_type != "video/mp4" and subtitles_file != "application/json":
-            return jsonify({"message": "invalid file type", "status_code": 401})
+
+        if (
+            file.content_type != "video/mp4"
+            or subtitles_file.content_type != "application/json"
+        ):
+            return jsonify({"message": "invalid file type", "statusCode": 401})
+
         if file and subtitles_file:
+            subtitles_data = json.load(subtitles_file)
+
+            result = cloudinary.uploader.upload(
+                file,
+                resource_type="video",
+                use_filename=True,
+                unique_filename=False,
+            )
+
             db = returnDBCollection()
             collection = db.videos
-            subtitles_data = json.load(subtitles_file)
-            fileNameToSave = generate_random_filename() + ".mp4"
-            filename = os.path.join(current_app.config["UPLOAD_FOLDER"], fileNameToSave)
-            file.save(filename)
             collection.insert_one(
-                {"subtitles": subtitles_data, "video": fileNameToSave}
+                {"subtitles": subtitles_data, "video": result["secure_url"]}
             )
-            return jsonify({"message": "Files uploaded successfully","statusCode":200}), 200
+
+            return (
+                jsonify(
+                    {
+                        "message": "Files uploaded successfully",
+                        "fileName": result["secure_url"],
+                        "statusCode": 200,
+                    }
+                ),
+                200,
+            )
+
         else:
             return jsonify({"message": "Please provide both the files"}), 403
 
-    except Exception:
-        return jsonify({"message": "something went wrong"}), 500
+    except Exception as e:
+        return jsonify({"message": "something went wrong", "err": str(e)}), 500
 
 
 # @app.route("/get_video/<video_id>", methods=["GET"])
