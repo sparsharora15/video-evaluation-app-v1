@@ -1,9 +1,7 @@
 import random
 import string
 from flask import current_app
-from flask import Flask
 from flask import jsonify, request, send_file, send_from_directory
-from flask_pymongo import PyMongo
 from gridfs import GridFS
 from bson import ObjectId, json_util
 from bson.json_util import dumps
@@ -83,10 +81,12 @@ def get_video_with_subtitle(video_id):
         data = db.videos.find_one({"_id": ObjectId(video_id)})
         if data is None:
             return jsonify({"message": "No file found"}), 404
-        serialized_data = json_util.dumps(data)  # Serialize the data
-        return {"data": serialized_data, "statusCode": 200}
+
+        data["_id"] = str(data["_id"])
+        return jsonify({"data": data, "statusCode": 200})
+        # return jsonify({"data": data, "statusCode": 200})
     except Exception as e:
-        return jsonify({"message": "something went wrong"}), 500
+        return jsonify({"message": "something went wrong" + str(e)}), 500
 
 
 # @app.route("/download/<filename>")
