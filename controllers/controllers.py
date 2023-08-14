@@ -19,23 +19,6 @@ def hello_world():
     return dumps("hello world")
 
 
-def updaloadSubtitile(subtitles_file, filename):
-    try:
-        db = returnDBCollection()
-        print("hello")
-        collection = db.videos
-        if subtitles_file:
-            subtitles_data = json.load(subtitles_file)
-            collection.insert_one({"subtitles": subtitles_data, "video": filename})
-            return jsonify({"message": "Subtitles uploaded successfully"}), 200
-
-        else:
-            return jsonify({"message": "No subtitles file provided"}), 400
-
-    except Exception as e:
-        return jsonify({"message": "something went wrong"}), 500
-
-
 # @app.route("/uploadFile", methods=["POST"])
 def generate_random_filename():
     # Generate a random string of letters and digits
@@ -101,7 +84,7 @@ def get_video_with_subtitle(video_id):
         if data is None:
             return jsonify({"message": "No file found"}), 404
         serialized_data = json_util.dumps(data)  # Serialize the data
-        return serialized_data, 200
+        return {"data": serialized_data, "statusCode": 200}
     except Exception as e:
         return jsonify({"message": "something went wrong"}), 500
 
