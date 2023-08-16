@@ -96,16 +96,6 @@ def get_video_with_subtitle(video_id):
         return jsonify({"message": "something went wrong" + str(e)}), 500
 
 
-def download_file(filename):
-    try:
-        db = returnDBCollection()
-        # Specify the path to your static directory
-        static_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")
-        return send_from_directory(static_dir, filename, as_attachment=True)
-    except Exception as e:
-        return jsonify({"message": "something went wrong"}), 500
-
-
 def updateSubtitles():
     try:
         db = returnDBCollection()
